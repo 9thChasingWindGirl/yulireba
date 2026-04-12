@@ -1,6 +1,6 @@
 module playfast
 
-go 1.24.2
+go 1.23
 
 require (
 	github.com/go-ping/ping v1.2.0
@@ -11,7 +11,7 @@ require (
 	github.com/sagernet/sing v0.7.12
 	github.com/sagernet/sing-box v1.12.9
 	github.com/sagernet/sing-dns v0.4.6
-	github.com/wailsapp/wails/v2 v2.12.0
+	github.com/wailsapp/wails/v2 v2.9.1
 	golang.org/x/sys v0.36.0
 )
 
