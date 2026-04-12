@@ -4,7 +4,6 @@ on:
   push:
     tags:
       - "v*"
-  workflow_dispatch:
 
 env:
   NODE_OPTIONS: "--max-old-space-size=4096"
@@ -14,49 +13,64 @@ jobs:
     runs-on: windows-latest
 
     env:
+      APP_NAME: YuLiReBa
       ZIP_FILE: YuLiReBa-windows-amd64.zip
 
     steps:
       - uses: actions/checkout@v4
 
+      # Go
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version-file: ./go.mod
+          cache: true
 
-      - name: Setup Node + pnpm
+      # pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: latest
 
-      - run: node -v
-      - run: go version
+      - name: Check versions
+        run: |
+          node -v
+          go version
 
-      - name: Install dependencies
+      # 前端构建
+      - name: Build frontend
         run: |
           cd frontend
           pnpm install
           pnpm build
-          cd ..
 
+      # 安装 Wails（固定版本更稳）
+      - name: Install Wails CLI
+        run: |
           go install github.com/wailsapp/wails/v2/cmd/wails@v2.9.1
+
+      # Go 依赖
+      - name: Go mod
+        run: |
           go mod tidy
           go mod download
 
-      - name: Build
+      # 构建（✅ 使用 embed）
+      - name: Build App
         run: |
-          wails build -m -trimpath -tags with_gvisor,with_clash_api -webview2 runtime -o YuLiReBa.exe
+          wails build -m -trimpath -tags with_gvisor,with_clash_api -webview2 embed -o ${{ env.APP_NAME }}.exe
 
+      # 压缩
       - name: Compress
         run: |
           cd build/bin
-          Compress-Archive -Path YuLiReBa.exe -DestinationPath ${{ env.ZIP_FILE }}
+          Compress-Archive -Path ${{ env.APP_NAME }}.exe -DestinationPath ${{ env.ZIP_FILE }}
 
-      # 👇 上传 Artifact（关键步骤）
+      # 上传 Artifact
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: windows-build
+          name: build-windows
           path: ./build/bin/${{ env.ZIP_FILE }}
           retention-days: 7
 
@@ -65,17 +79,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 👇 下载 Artifact
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
-          name: windows-build
+          name: build-windows
           path: ./artifacts
 
-      - name: List files (debug)
+      - name: List files
         run: ls -R ./artifacts
 
-      # 👇 发布 Release
       - name: Create Release
         uses: svenstaro/upload-release-action@v2
         with:
@@ -86,7 +98,7 @@ jobs:
           release_name: ${{ github.ref_name }}
           overwrite: true
           draft: false
-          prerelease: false
+          prerelease: contains(github.ref_name, 'beta')
           body: |
             Auto-generated release from GitHub Actions.
 
@@ -96,6 +108,9 @@ jobs:
             - 支持本地节点文件读取
             - 预留 Supabase 账户系统
             - Windows 平台支持
+
+            ## 运行说明
+            - 已内置 WebView2 Runtime（无需额外安装）
 
             ## 版本信息
             - 版本：${{ github.ref_name }}
