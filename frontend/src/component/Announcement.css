@@ -1,0 +1,19 @@
+/* 公告样式 */
+#Announcement {
+    position: absolute; /* 设定为绝对定位 */
+    text-align: left;
+    top: 30px; /* 距离顶部0 */
+    left: 10px; /* 距离左侧0 */
+    width: 55.66%; /* 占用2/3的宽度 */
+    height: 300px; /* 设置高度 */
+    background-color: transparent; /* 背景透明 */
+    padding: 10px; /* 添加一些内边距 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 添加阴影效果 */
+    border-radius: 10px; /* 可选：添加圆角 */
+    overflow-y: scroll; /* 允许垂直滚动 */
+}
+
+/* 隐藏滚动条 */
+#Announcement::-webkit-scrollbar {
+    display: none; /* 隐藏滚动条 */
+}

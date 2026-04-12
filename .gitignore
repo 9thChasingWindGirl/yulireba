@@ -1,0 +1,7 @@
+build/bin
+node_modules
+frontend/dist
+.idea
+debug.log
+run.log
+build/windows/installer/tmp

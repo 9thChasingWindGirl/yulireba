@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">
+    <!-- 应用程序标识 -->
+    <assemblyIdentity
+        type="win32"
+        name="com.wails.{{.Name}}"
+        version="{{.Info.ProductVersion}}.0"
+        processorArchitecture="*"/>
+
+    <!-- 依赖的Windows通用控件 -->
+    <dependency>
+        <dependentAssembly>
+            <assemblyIdentity
+                type="win32"
+                name="Microsoft.Windows.Common-Controls"
+                version="6.0.0.0"
+                processorArchitecture="*"
+                publicKeyToken="6595b64144ccf1df"
+                language="*"/>
+        </dependentAssembly>
+    </dependency>
+
+    <!-- 应用程序设置 -->
+    <asmv3:application>
+        <!-- DPI感知设置 -->
+        <asmv3:windowsSettings>
+            <!-- Windows 7/8兼容设置 -->
+            <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware>
+
+            <!-- Windows 10+ 多显示器DPI支持 -->
+            <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">PerMonitorV2, PerMonitor</dpiAwareness>
+
+            <!-- 可选：禁用自动缩放 -->
+            <!-- <disableDpiAwareness xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">false</disableDpiAwareness> -->
+        </asmv3:windowsSettings>
+    </asmv3:application>
+
+    <!-- 安全与权限设置 -->
+    <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+       <security>
+          <requestedPrivileges>
+            <!-- 根据实际需要选择权限级别 -->
+            <!-- 如果不需要管理员权限，改为 asInvoker -->
+            <requestedExecutionLevel
+                level="requireAdministrator"
+                uiAccess="false"/>
+          </requestedPrivileges>
+        </security>
+    </trustInfo>
+
+    <!-- 兼容性设置 -->
+    <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+        <application>
+            <!-- 支持的Windows版本 -->
+            <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"/> <!-- Windows 10 -->
+            <supportedOS Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"/> <!-- Windows 8.1 -->
+            <supportedOS Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"/> <!-- Windows 8 -->
+            <supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"/> <!-- Windows 7 -->
+        </application>
+    </compatibility>
+</assembly>

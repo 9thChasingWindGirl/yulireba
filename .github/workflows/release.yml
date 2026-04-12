@@ -1,0 +1,105 @@
+name: releaser
+
+on:
+  push:
+    tags:
+      - "v*"
+
+env:
+  NODE_OPTIONS: "--max-old-space-size=4096"
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      ZIP_FILE: YuLiReBa-windows-amd64.zip
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: ./go.mod
+
+      - name: Setup Node + pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - run: node -v
+      - run: go version
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          pnpm install
+          pnpm build
+          cd ..
+
+          go install github.com/wailsapp/wails/v2/cmd/wails@v2.9.1
+          go mod tidy
+          go mod download
+
+      - name: Build
+        run: |
+          wails build -m -trimpath -tags with_gvisor,with_clash_api -webview2 runtime -o YuLiReBa.exe
+
+      - name: Compress
+        run: |
+          cd build/bin
+          Compress-Archive -Path YuLiReBa.exe -DestinationPath ${{ env.ZIP_FILE }}
+
+      # 👇 上传 Artifact（关键步骤）
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: ./build/bin/${{ env.ZIP_FILE }}
+          retention-days: 7
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      # 👇 下载 Artifact
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-build
+          path: ./artifacts
+
+      - name: List files (debug)
+        run: ls -R ./artifacts
+
+      # 👇 发布 Release
+      - name: Create Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./artifacts/YuLiReBa-windows-amd64.zip
+          asset_name: YuLiReBa-windows-amd64.zip
+          tag: ${{ github.ref_name }}
+          release_name: ${{ github.ref_name }}
+          overwrite: true
+          draft: false
+          prerelease: false
+          body: |
+            Auto-generated release from GitHub Actions.
+
+            ## 功能特性
+            - 基于 sing-box 内核的游戏加速
+            - 支持订阅链接解析（Clash/sing-box 格式）
+            - 支持本地节点文件读取
+            - 预留 Supabase 账户系统
+            - Windows 平台支持
+
+            ## 版本信息
+            - 版本：${{ github.ref_name }}
+            - 构建ID：${{ github.run_id }}
+
+            ## 使用说明
+            1. 下载压缩包
+            2. 解压运行 YuLiReBa.exe
