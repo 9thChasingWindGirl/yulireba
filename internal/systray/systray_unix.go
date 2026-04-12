@@ -8,8 +8,8 @@
 package systray
 
 import (
-	"PlayFast/internal/systray/internal/generated/menu"
-	"PlayFast/internal/systray/internal/generated/notifier"
+	"playfast/internal/systray/internal/generated/menu"
+	"playfast/internal/systray/internal/generated/notifier"
 	"bytes"
 	"fmt"
 	"image"

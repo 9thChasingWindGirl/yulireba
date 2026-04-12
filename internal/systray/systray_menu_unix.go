@@ -4,7 +4,7 @@
 package systray
 
 import (
-	"PlayFast/internal/systray/internal/generated/menu"
+	"playfast/internal/systray/internal/generated/menu"
 	"log"
 
 	"github.com/godbus/dbus/v5"
