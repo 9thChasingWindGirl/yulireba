@@ -1,6 +1,6 @@
 module playfast
 
-go 1.24.2
+go 1.23
 
 require (
 	github.com/go-ping/ping v1.2.0
