@@ -8,7 +8,7 @@ import (
 	"log"
 	"playfast/internal/api"
 	"playfast/internal/echo"
-	"playfast/internal/http-client"
+	"playfast/internal/httpclient"
 	"time"
 
 	"github.com/sagernet/sing-box/constant"
@@ -28,7 +28,7 @@ type Proxy struct {
 
 func Get() []Proxy {
 	data := make([]Proxy, 0)
-	all, err := http_client.GET(fmt.Sprintf("%s/proxy.json", api.GetApiDomain()))
+	all, err := httpclient.GET(fmt.Sprintf("%s/proxy.json", api.GetApiDomain()))
 	if err != nil {
 		return data
 	}

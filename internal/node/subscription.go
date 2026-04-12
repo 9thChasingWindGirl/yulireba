@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"playfast/internal/http-client"
+	"playfast/internal/httpclient"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -31,7 +31,7 @@ type ClashConfig struct {
 }
 
 func GetFromSubscription(url string) ([]Proxy, error) {
-	all, err := http_client.GET(url)
+	all, err := httpclient.GET(url)
 	if err != nil {
 		return nil, err
 	}

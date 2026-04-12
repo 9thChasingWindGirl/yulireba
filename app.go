@@ -11,7 +11,7 @@ import (
 	"playfast/internal/api"
 	"playfast/internal/core"
 	"playfast/internal/dialog"
-	"playfast/internal/http-client"
+	"playfast/internal/httpclient"
 	"playfast/internal/node"
 	"playfast/internal/systray"
 	"playfast/utils"
@@ -44,7 +44,7 @@ func (a *App) startup(ctx context.Context) {
 }
 func (a *App) checkUpdate(tip bool) {
 	data := make(map[string]string)
-	all, err := http_client.GET(fmt.Sprintf("%s/version.json", api.GetApiDomain()))
+	all, err := httpclient.GET(fmt.Sprintf("%s/version.json", api.GetApiDomain()))
 	if err != nil {
 		dialog.Error(a.ctx, "获取最新版本失败", fmt.Sprintln("Error:", err))
 		return
@@ -81,7 +81,7 @@ func (a *App) checkUpdate(tip bool) {
 	if res == "No" {
 		return
 	}
-	all, err = http_client.GET(data[fmt.Sprintf("url_%s", goRuntime.GOOS)] + "?version=" + data["version"])
+	all, err = httpclient.GET(data[fmt.Sprintf("url_%s", goRuntime.GOOS)] + "?version=" + data["version"])
 	if err != nil {
 		dialog.Error(a.ctx, "下载新版本失败", fmt.Sprintln("Error:", err))
 		return
@@ -188,7 +188,7 @@ func (a *App) Switch(status bool, proxy string, route bool) string {
 	return ""
 }
 func (a *App) GetAnnouncement() string {
-	all, err := http_client.GET(fmt.Sprintf("%s/announcement", api.GetApiDomain()))
+	all, err := httpclient.GET(fmt.Sprintf("%s/announcement", api.GetApiDomain()))
 	if err != nil {
 		return ""
 	}

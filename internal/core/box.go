@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"playfast/internal/api"
-	httpclient "playfast/internal/http-client"
+	"playfast/internal/httpclient"
 	"playfast/internal/node"
 	"playfast/internal/apppath"
 	"playfast/utils"
