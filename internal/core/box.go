@@ -11,7 +11,7 @@ import (
 	"playfast/internal/api"
 	httpclient "playfast/internal/http-client"
 	"playfast/internal/node"
-	"playfast/internal/path"
+	"playfast/internal/apppath"
 	"playfast/utils"
 	"sync"
 	"time"
@@ -93,10 +93,10 @@ func (b *Box) Stop() error {
 func New(ctx context.Context) *Box {
 	ctx = service.ContextWith(ctx, deprecated.NewStderrManager(slog.StdLogger()))
 	ctx = box.Context(ctx, include.InboundRegistry(), include.OutboundRegistry(), include.EndpointRegistry(), include.DNSTransportRegistry(), include.ServiceRegistry())
-	_ = os.WriteFile(filepath.Join(path.Path(), "black-list.json"), black, 0644)
-	_ = os.WriteFile(filepath.Join(path.Path(), "direct-list.json"), direct, 0644)
-	_ = os.WriteFile(filepath.Join(path.Path(), "geoip-cn.srs"), geoip, 0644)
-	_ = os.WriteFile(filepath.Join(path.Path(), "geosite-cn.srs"), geosite, 0644)
+	_ = os.WriteFile(filepath.Join(apppath.Path(), "black-list.json"), black, 0644)
+	_ = os.WriteFile(filepath.Join(apppath.Path(), "direct-list.json"), direct, 0644)
+	_ = os.WriteFile(filepath.Join(apppath.Path(), "geoip-cn.srs"), geoip, 0644)
+	_ = os.WriteFile(filepath.Join(apppath.Path(), "geosite-cn.srs"), geosite, 0644)
 	b := Box{
 		ctx:     ctx,
 		appends: []string{},
@@ -111,28 +111,28 @@ func (b *Box) update() {
 		data = black
 	}
 	b.Lock()
-	_ = os.WriteFile(filepath.Join(path.Path(), "black-list.json"), data, 0644)
+	_ = os.WriteFile(filepath.Join(apppath.Path(), "black-list.json"), data, 0644)
 	b.Unlock()
 	data, err = httpclient.GET(fmt.Sprintf("%s/direct-list.json", api.GetApiDomain()))
 	if err != nil {
 		data = direct
 	}
 	b.Lock()
-	_ = os.WriteFile(filepath.Join(path.Path(), "direct-list.json"), data, 0644)
+	_ = os.WriteFile(filepath.Join(apppath.Path(), "direct-list.json"), data, 0644)
 	b.Unlock()
 	data, err = httpclient.GET("https://raw.githubusercontent.com/lyc8503/sing-box-rules/refs/heads/rule-set-geoip/geoip-cn.srs")
 	if err != nil {
 		data = geoip
 	}
 	b.Lock()
-	_ = os.WriteFile(filepath.Join(path.Path(), "geoip-cn.srs"), data, 0644)
+	_ = os.WriteFile(filepath.Join(apppath.Path(), "geoip-cn.srs"), data, 0644)
 	b.Unlock()
 	data, err = httpclient.GET("https://raw.githubusercontent.com/lyc8503/sing-box-rules/refs/heads/rule-set-geosite/geosite-cn.srs")
 	if err != nil {
 		data = geosite
 	}
 	b.Lock()
-	_ = os.WriteFile(filepath.Join(path.Path(), "geosite-cn.srs"), data, 0644)
+	_ = os.WriteFile(filepath.Join(apppath.Path(), "geosite-cn.srs"), data, 0644)
 	b.Unlock()
 }
 
@@ -252,25 +252,25 @@ func (b *Box) newBox(proxy string) error {
 						Type:         constant.RuleSetTypeLocal,
 						Tag:          "geosite-cn",
 						Format:       constant.RuleSetFormatBinary,
-						LocalOptions: option.LocalRuleSet{Path: filepath.Join(path.Path(), "geosite-cn.srs")},
+						LocalOptions: option.LocalRuleSet{Path: filepath.Join(apppath.Path(), "geosite-cn.srs")},
 					},
 					{
 						Type:         constant.RuleSetTypeLocal,
 						Tag:          "geoip-cn",
 						Format:       constant.RuleSetFormatBinary,
-						LocalOptions: option.LocalRuleSet{Path: filepath.Join(path.Path(), "geoip-cn.srs")},
+						LocalOptions: option.LocalRuleSet{Path: filepath.Join(apppath.Path(), "geoip-cn.srs")},
 					},
 					{
 						Type:         constant.RuleSetTypeLocal,
 						Tag:          "black-list",
 						Format:       constant.RuleSetFormatSource,
-						LocalOptions: option.LocalRuleSet{Path: filepath.Join(path.Path(), "black-list.json")},
+						LocalOptions: option.LocalRuleSet{Path: filepath.Join(apppath.Path(), "black-list.json")},
 					},
 					{
 						Type:         constant.RuleSetTypeLocal,
 						Tag:          "direct-list",
 						Format:       constant.RuleSetFormatSource,
-						LocalOptions: option.LocalRuleSet{Path: filepath.Join(path.Path(), "direct-list.json")},
+						LocalOptions: option.LocalRuleSet{Path: filepath.Join(apppath.Path(), "direct-list.json")},
 					},
 				},
 				AutoDetectInterface: true,
@@ -395,11 +395,11 @@ func (b *Box) newBox(proxy string) error {
 			},
 		}, //最终代理
 	}...)
-	_ = os.Remove(path.Path() + "/run.log")
+	_ = os.Remove(apppath.Path() + "/run.log")
 	options.Log = &option.LogOptions{
 		Disabled:     false,
 		Level:        slog.FormatLevel(slog.LevelInfo),
-		Output:       path.Path() + "/run.log",
+		Output:       apppath.Path() + "/run.log",
 		Timestamp:    true,
 		DisableColor: true,
 	}

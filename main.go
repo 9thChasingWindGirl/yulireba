@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 	"os"
-	"playfast/internal/path"
+	"playfast/internal/apppath"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -27,7 +27,7 @@ func main() {
 		_ = dial.Close()
 		return
 	}
-	appLog := path.Path() + "/app.log"
+	appLog := apppath.Path() + "/app.log"
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	open, err := os.Create(appLog)
 	if err == nil {
