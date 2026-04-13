@@ -40,12 +40,14 @@ func main() {
 		Title:            "YuLiReBa",
 		Width:            576,
 		Height:           384,
+		MinWidth:         576,
+		MinHeight:        384,
 		BackgroundColour: &options.RGBA{R: 75, G: 0, B: 130, A: 1},
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
 		OnStartup:         app.startup,
-		DisableResize:     true,
+		DisableResize:     false,
 		HideWindowOnClose: true,
 		Bind: []interface{}{
 			app,
