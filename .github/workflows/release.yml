@@ -48,7 +48,14 @@ jobs:
       # 安装 Wails（固定版本更稳）
       - name: Install Wails CLI
         run: |
+          # 确保使用正确的 Go bin 目录
+          $env:Path = "$env:USERPROFILE\go\bin;$env:Path"
+          # 卸载可能存在的旧版本
+          go clean -cache
+          # 安装指定版本
           go install github.com/wailsapp/wails/v2/cmd/wails@v2.12.0
+          # 验证版本
+          & "$env:USERPROFILE\go\bin\wails.exe" version
 
       # Go 依赖
       - name: Go mod
@@ -59,7 +66,8 @@ jobs:
       # 构建（✅ 使用 embed）
       - name: Build App
         run: |
-          wails build -m -trimpath -tags with_gvisor,with_clash_api -webview2 embed -o ${{ env.APP_NAME }}.exe
+          $env:Path = "$env:USERPROFILE\go\bin;$env:Path"
+          & "$env:USERPROFILE\go\bin\wails.exe" build -m -trimpath -tags with_gvisor,with_clash_api -webview2 embed -o ${{ env.APP_NAME }}.exe
 
       # 压缩
       - name: Compress
