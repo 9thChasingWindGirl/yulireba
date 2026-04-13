@@ -27,9 +27,10 @@ import (
 )
 
 type App struct {
-	ctx  context.Context
-	box  *core.Box
-	init atomic.Bool
+	ctx      context.Context
+	box      *core.Box
+	init     atomic.Bool
+	proxies  []node.Proxy
 }
 
 func NewApp() *App {
@@ -174,7 +175,7 @@ func (a *App) Switch(status bool, proxy string, route bool) string {
 				}()
 			}()
 		}
-		if err = a.box.Start(proxy, route); err != nil {
+		if err = a.box.Start(proxy, route, a.proxies); err != nil {
 			dialog.Error(a.ctx, "加速失败", err.Error())
 			return err.Error()
 		}
@@ -201,9 +202,9 @@ func (a *App) Open(path string) {
 	_ = exec.Command(path).Start()
 }
 func (a *App) ProxyList() []string {
-	get := node.Get()
+	a.proxies = node.Get()
 	strings := make([]string, 0)
-	for _, proxy := range get {
+	for _, proxy := range a.proxies {
 		strings = append(strings, proxy.Name)
 	}
 	return strings
@@ -223,6 +224,7 @@ func (a *App) LoadSubscription(url string) []ProxyInfo {
 	if err != nil {
 		return []ProxyInfo{}
 	}
+	a.proxies = proxies
 	result := make([]ProxyInfo, len(proxies))
 	for i, p := range proxies {
 		result[i] = ProxyInfo{
@@ -242,6 +244,7 @@ func (a *App) LoadLocalFile(content string) []ProxyInfo {
 	if err != nil {
 		return []ProxyInfo{}
 	}
+	a.proxies = proxies
 	result := make([]ProxyInfo, len(proxies))
 	for i, p := range proxies {
 		result[i] = ProxyInfo{

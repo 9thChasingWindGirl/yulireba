@@ -37,7 +37,11 @@ func Get() []Proxy {
 }
 func GetOutbound(proxy string) (*option.Outbound, string, error) {
 	data := Get()
-	for i, p := range data {
+	return GetOutboundFromList(data, proxy)
+}
+
+func GetOutboundFromList(proxies []Proxy, proxy string) (*option.Outbound, string, error) {
+	for i, p := range proxies {
 		if p.Name != proxy {
 			continue
 		}
@@ -120,5 +124,5 @@ func GetOutbound(proxy string) (*option.Outbound, string, error) {
 		}
 		return &out, p.Host, nil
 	}
-	return nil, "", errors.New("not fount Outbound")
+	return nil, "", errors.New("not found Outbound")
 }

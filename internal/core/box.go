@@ -43,15 +43,17 @@ type Box struct {
 	box              *box.Box
 	ctx              context.Context
 	router           bool
+	proxies          []node.Proxy
 	appends          []string
 	defaultInterface int
 	sync.Mutex
 }
 
-func (b *Box) Start(region string, router bool) error {
+func (b *Box) Start(region string, router bool, proxies []node.Proxy) error {
 	b.Lock()
 	defer b.Unlock()
 	b.router = router
+	b.proxies = proxies
 	if b.box == nil {
 		err := b.newBox(region)
 		if err != nil {
@@ -137,7 +139,7 @@ func (b *Box) update() {
 }
 
 func (b *Box) newBox(proxy string) error {
-	proxyOutbound, proxyOutboundHost, err := node.GetOutbound(proxy)
+	proxyOutbound, proxyOutboundHost, err := node.GetOutboundFromList(b.proxies, proxy)
 	if err != nil {
 		return err
 	}
