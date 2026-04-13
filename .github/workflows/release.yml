@@ -48,7 +48,7 @@ jobs:
       # 安装 Wails（固定版本更稳）
       - name: Install Wails CLI
         run: |
-          go install github.com/wailsapp/wails/v2/cmd/wails@v2.9.1
+          go install github.com/wailsapp/wails/v2/cmd/wails@v2.12.0
 
       # Go 依赖
       - name: Go mod
